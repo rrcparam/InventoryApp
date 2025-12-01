@@ -1,1 +1,66 @@
 
+name: Deploy Lambda Functions
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "lambda/**/lambda_function.py"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy get_all_inventory_items
+        run: |
+          zip -j function.zip lambda/get_all_inventory_items/lambda_function.py
+          aws lambda update-function-code \
+            --function-name get_all_inventory_items \
+            --zip-file fileb://function.zip
+          rm function.zip
+
+      - name: Deploy get_inventory_item
+        run: |
+          zip -j function.zip lambda/get_inventory_item/lambda_function.py
+          aws lambda update-function-code \
+            --function-name get_inventory_item \
+            --zip-file fileb://function.zip
+          rm function.zip
+
+      - name: Deploy add_inventory_item
+        run: |
+          zip -j function.zip lambda/add_inventory_item/lambda_function.py
+          aws lambda update-function-code \
+            --function-name add_inventory_item \
+            --zip-file fileb://function.zip
+          rm function.zip
+
+      - name: Deploy delete_inventory_item
+        run: |
+          zip -j function.zip lambda/delete_inventory_item/lambda_function.py
+          aws lambda update-function-code \
+            --function-name delete_inventory_item \
+            --zip-file fileb://function.zip
+          rm function.zip
+
+      - name: Deploy get_location_inventory_items
+        run: |
+          zip -j function.zip lambda/get_location_inventory_items/lambda_function.py
+          aws lambda update-function-code \
+            --function-name get_location_inventory_items \
+            --zip-file fileb://function.zip
+          rm function.zip
+
+

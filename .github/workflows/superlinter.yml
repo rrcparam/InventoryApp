@@ -3,14 +3,23 @@ name: Super-Linter
 
 on:
   pull_request:
+
+    types: [opened, reopened, synchronize]
+  push:
+    branches: [dev]
+
     types: [opened, reopened]
+
 
 permissions: {}
 
 jobs:
   build:
+
+    name: Lint Code Base
+    
     name: Lint
-    runs-on: ubuntu-latest
+  runs-on: ubuntu-latest
 
     permissions:
       contents: read
@@ -18,10 +27,25 @@ jobs:
       statuses: write
 
     steps:
+
+      - name: Checkout Code
+
       - name: Checkout code
+
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+
+      - name: Run Super-Linter
+        uses: super-linter/super-linter@v7.1.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_PYTHON: true
+          VALIDATE_YAML: true
+          VALIDATE_JSON: true
+          VALIDATE_HTML: true
+          VALIDATE_MARKDOWN: true
 
       - name: Super-linter
         uses: super-linter/super-linter@v7.1.0
@@ -31,3 +55,4 @@ jobs:
           FIX_HTML_PRETTIER: true
           FIX_PYTHON_BLACK: true
           FIX_YAML_PRETTIER: true
+
